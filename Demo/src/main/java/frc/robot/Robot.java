@@ -31,52 +31,45 @@ public class Robot extends TimedRobot {
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
    */
-    // RIGHT MOTORS
-   private final CANSparkMax rightMotor1 = new CANSparkMax(5, MotorType.kBrushed);
-   private final CANSparkMax rightMotor2 = new CANSparkMax(6, MotorType.kBrushed);
 
-   // LEFT MOTORS
-   private final CANSparkMax leftMotor1 = new CANSparkMax(7, MotorType.kBrushed);
-   private final CANSparkMax leftMotor2 = new CANSparkMax(8, MotorType.kBrushed);
+  // RIGHT MOTORS
+    private final CANSparkMax rightMotor1 = new CANSparkMax(5, MotorType.kBrushed);
+    private final CANSparkMax rightMotor2 = new CANSparkMax(6, MotorType.kBrushed);
+
+  // LEFT MOTORS
+    private final CANSparkMax leftMotor1 = new CANSparkMax(7, MotorType.kBrushed);
+    private final CANSparkMax leftMotor2 = new CANSparkMax(8, MotorType.kBrushed);
 
   // UPPER-MECHANISM
-  private final CANSparkMax inOutSysMotor = new CANSparkMax(9, MotorType.kBrushed);
-  private final CANSparkMax hook = new CANSparkMax(10, MotorType.kBrushed);
+    private final CANSparkMax inOutSysMotor = new CANSparkMax(9, MotorType.kBrushed);
+    private final CANSparkMax hook = new CANSparkMax(10, MotorType.kBrushed);
 
   // Drive 
   private DifferentialDrive m_Drive = new DifferentialDrive(leftMotor1, rightMotor1);
+
   /*
    * Mechanism 1 (Upper): Sucks in & Out the ring
    * Mechanism 2 (Upper):  Hoops up
    */
 
   // CONTROLLERS
-
-  private final XboxController userDriver = new XboxController(11);
-
-  DifferentialDrive m_drivetrain; // if robot dont move delete this
- 
-  CANSparkMax m_launchWheel = new CANSparkMax(9, MotorType.kBrushed); // for the outtake
-  CANSparkMax m_feedwheel = new CANSparkMax(10, MotorType.kBrushed); // intake
-  
-  
-  private static final String kNothingAuto = "do nothing";        // autonomous selection options
-  private static final String kLaunchAndDrive = "launch drive"; // autonomous selection options
-  private static final String kLaunch = "launch";
-  private static final String kDrive = "drive";                         // autonomous selection options
-  private String m_autoSelected;  // autonomous selection options
-  private final SendableChooser<String> m_chooser = new SendableChooser<>(); // autonomous selection options
+    private final XboxController userDriver = new XboxController(11);
 
 
-  // Below will be code for how much AMPS SYSTEMS CAN USE
+
+  // Constants used to substitute powers or speeds
+  static final double INTAKE_OUT_SPEED = 1.0; // percentage of feeder expelling note
+
+  static final double INTAKE_IN_SPEED = -.4; // percentage of speed feeder taking in note
+
 
   static final int DRIVE_CURRENT_LIMIT_A = 60;  // drive train motor limit
+  static final int DRIVE_ROTATE_SPEED = .3; 
+  static final int DRIVE_POWER_SPEED = .60;
+  static final int DRIVE_TURN_SPEED = .3;
 
-  static final int FEEDER_CURRENT_LIMIT_A =80; // feeder current limit
 
-  static final double FEEDER_OUT_SPEED = 1.0; // percentage of feeder expelling note
-
-  static final double FEEDER_IN_SPEED = -.4; // percentage of speed feeder taking in note
+  static final int FEEDER_CURRENT_LIMIT_A = 80; // feeder current limit
 
   static final double FEEDER_AMP_SPEED = .4; // Percent output for amp or drop note, configure based on polycarb bend
 
@@ -91,34 +84,8 @@ public class Robot extends TimedRobot {
 
 // below if robot does not work try changing the initallizing code 
 
-   @Override
+  @Override
   public void robotInit() {
-      m_chooser.setDefaultOption("do nothing", kNothingAuto);         // set chooser to sendable
-      m_chooser.addOption("launch note and drive", kLaunchAndDrive);
-      m_chooser.addOption("launch",kLaunch);
-      m_chooser.addOption("drive", kDrive);
-      SmartDashboard.putData("Auto choices", (Sendable) m_chooser);
-
-      rightMotor1.setSmartCurrentLimit(DRIVE_CURRENT_LIMIT_A);    // drive train motor amp limits
-      rightMotor2.setSmartCurrentLimit(DRIVE_CURRENT_LIMIT_A);
-      leftMotor1.setSmartCurrentLimit(DRIVE_CURRENT_LIMIT_A);
-      leftMotor2.setSmartCurrentLimit(DRIVE_CURRENT_LIMIT_A);
-      
-      rightMotor1.follow(rightMotor2);   //tells the back wheels to follow same command as first 
-      leftMotor1.follow(leftMotor2);      // if robot drives weird change this
-
-      rightMotor2.setInverted(true);
-      leftMotor2.setInverted(false);  //One side of the drivetrain must be inverted, motors opposite
-
-      m_drivetrain = new DifferentialDrive(rightMotor2, leftMotor2);
-
-      // if launcher wheel spins wrong direction change it to true here you can add white tape to determine wheel direction
-
-      m_feedwheel.setInverted(true);
-      m_launchWheel.setInverted(true);
-
-      m_feedwheel.setSmartCurrentLimit(FEEDER_CURRENT_LIMIT_A); // applies current limit to launching mechanism
-      m_launchWheel.setSmartCurrentLimit(LAUNCHER_CURRENT_LIMIT_A);
 
   }
 
@@ -126,7 +93,15 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {}
 
   @Override
-  public void autonomousInit() {}
+  public void autonomousInit() {
+    // sets motors to rest
+    rightMotor1.set(0);
+    rightMotor2.set(0);
+    leftMotor1.set(0);
+    leftMotor2.set(0);
+    inOutSysMotor.set(0);
+    hook.set(0);
+  }
 
   @Override
   public void autonomousPeriodic() {}
@@ -137,7 +112,8 @@ public class Robot extends TimedRobot {
     rightMotor2.set(0);
     leftMotor1.set(0);
     leftMotor2.set(0);
-    
+    inOutSysMotor.set(0);
+    hook.set(0);
   }
 
   @Override
@@ -146,12 +122,12 @@ public class Robot extends TimedRobot {
       // Intake
       if (userDriver.getRightBumperPressed()) { // powers intake for ring
           inOutSysMotor.set(FEEDER_AMP_SPEED); // prone to change according to constants || For Reakab: Make sure to adjust this intake to an according speed, just like a motor
-      } else if (userDriver.getRightBumperReleased()) inOutSysMotor.set(0); // Sets intake to rest
+      } else inOutSysMotor.set(0); // Sets intake to rest else
 
       // Hook
       if (userDriver.getLeftBumperPressed()) {
         hook.set(.3); // prone to change
-      } else if (userDriver.getLeftBumperReleased()) inOutSysMotor.set(0);
+      } else hook.set(0);
 
 
       // Drive 
@@ -167,8 +143,8 @@ public class Robot extends TimedRobot {
 
        */
 
-      // Allows robot to move and rotate 
-      m_Drive.curvatureDrive(-userDriver.getLeftY(), -userDriver.getLeftX(), userDriver.getBButton()); 
+      // Allows robot to move and rotate  
+      m_Drive.arcadeDrive(userDriver.getY * DRIVE_POWER_SPEED, userDriver.getX * DRIVE_ROTATE_SPEED);
   }
 
   @Override
