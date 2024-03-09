@@ -76,26 +76,38 @@ public class Robot extends TimedRobot {
             inOutSysMotor.set(.6); // prone to change according to constants || For Reakab: Make sure to adjust this intake to an according speed, just like a motor
         } else if (userDriver.getRightBumperReleased()) inOutSysMotor.set(0); // Sets intake to rest
 
-        // HOOK
+      // HOOK
         if (userDriver.getLeftBumperPressed()) {
           hook.set(.3); // prone to change
         } else if (userDriver.getLeftBumperReleased()) inOutSysMotor.set(0);
 
       // JOYSTICK INPUTS
-        double xSpeed = joystick.getRawAxis(1); // reads the input from the x-axis of the joystick | side-to-side motion or strafing
-        double ySpeed = joystick.getRawAxis(0); // reads the input from the y-axis of the joystick | forward-backward motion
-        double zRotation = joystick.getRawAxis(4); // reads the input from another axis of the joystick | rotation or turning
+        double xSpeed = joystick.getRawAxis(0); // reads the input from the x-axis of the joystick | side-to-side motion or strafing
+        double ySpeed = joystick.getRawAxis(1); // reads the input from the y-axis of the joystick | forward-backward motion
+        double zRotation = joystick.getRawAxis(2); // reads the input from another axis of the joystick | rotation or turning
         drive.driveCartesian(xSpeed, ySpeed, zRotation); // x - axis speed, y - axis speed, z-rotation speed
 
       // Set steering angles for each wheel module using joystick axes
       /*
-       *     Axis 2 controls the steering angles for the left side wheels.
-             Axis 3 controls the steering angles for the right side wheels.
+       *                    [NOTES TO REMEMBER]
+       *     Axis 1 controls the steering angles for the left side wheels. 
+             Axis 2 controls the steering angles for the right side wheels.
+             Axis 1 and 2 are associated with the joystick's horizontal and vertical movements.
+             
+              Since swerve drive systems often require independent control of each wheel module's steering angle, 
+              it's common to use one analog stick for controlling the steering angles of the left side wheels and 
+              the other analog stick for controlling the steering angles of the right side wheels. This allows for 
+              intuitive control, similar to driving a car with a steering wheel
+
+            What does this do?
+              It detects anolog axis movement
+                - If axis 2 detected => 90 and if anologAxis != 2 || 3 => 0
+
        */
-        setSteeringAngle(frontLeftDrive, joystick.getRawAxis(2) * 90.0);  // Assuming axis 2 controls steering angle (multiply by 90 for full range)
-        setSteeringAngle(frontRightDrive, joystick.getRawAxis(3) * 90.0); // Assuming axis 3 controls steering angle (multiply by 90 for full range)
-        setSteeringAngle(rearLeftDrive, joystick.getRawAxis(2) * 90.0);    // Assuming axis 2 controls steering angle (multiply by 90 for full range)
-        setSteeringAngle(rearRightDrive, joystick.getRawAxis(3) * 90.0);   // Assuming axis 3 controls steering angle (multiply by 90 for full range)
+        setSteeringAngle(frontLeftDrive, joystick.getRawAxis(1) * 90.0);  // axis 2 controls steering angle (multiply by 90 for full range)
+        setSteeringAngle(frontRightDrive, joystick.getRawAxis(2) * 90.0); // axis 3 controls steering angle (multiply by 90 for full range)
+        setSteeringAngle(rearLeftDrive, joystick.getRawAxis(1) * 90.0);    // axis 2 controls steering angle (multiply by 90 for full range)
+        setSteeringAngle(rearRightDrive, joystick.getRawAxis(2) * 90.0);   // axis 3 controls steering angle (multiply by 90 for full range)
 
   }
   
