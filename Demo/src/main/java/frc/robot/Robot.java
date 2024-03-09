@@ -87,11 +87,16 @@ public class Robot extends TimedRobot {
         double zRotation = joystick.getRawAxis(4); // reads the input from another axis of the joystick | rotation or turning
         drive.driveCartesian(xSpeed, ySpeed, zRotation); // x - axis speed, y - axis speed, z-rotation speed
 
-      // Set steering angles for each wheqel module
-        setSteeringAngle(frontLeftDrive, joystick.getRawAxis(2));
-        setSteeringAngle(frontRightDrive, joystick.getRawAxis(3));
-        setSteeringAngle(rearLeftDrive, joystick.getRawAxis(2));
-        setSteeringAngle(rearRightDrive, joystick.getRawAxis(3));
+      // Set steering angles for each wheel module using joystick axes
+      /*
+       *     Axis 2 controls the steering angles for the left side wheels.
+             Axis 3 controls the steering angles for the right side wheels.
+       */
+        setSteeringAngle(frontLeftDrive, joystick.getRawAxis(2) * 90.0);  // Assuming axis 2 controls steering angle (multiply by 90 for full range)
+        setSteeringAngle(frontRightDrive, joystick.getRawAxis(3) * 90.0); // Assuming axis 3 controls steering angle (multiply by 90 for full range)
+        setSteeringAngle(rearLeftDrive, joystick.getRawAxis(2) * 90.0);    // Assuming axis 2 controls steering angle (multiply by 90 for full range)
+        setSteeringAngle(rearRightDrive, joystick.getRawAxis(3) * 90.0);   // Assuming axis 3 controls steering angle (multiply by 90 for full range)
+
   }
   
   // method used to set steering angle for the swerve modules
