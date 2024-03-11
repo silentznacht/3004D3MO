@@ -91,7 +91,6 @@ public class SwerveModule {
 
   /**
    * Sets the desired state for the module.
-   *
    * @param desiredState Desired state with speed and angle.
    */
   public void setDesiredState(SwerveModuleState desiredState) {var encoderRotation = new Rotation2d(m_turningEncoder.getDistance());

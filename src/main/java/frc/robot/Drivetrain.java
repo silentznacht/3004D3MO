@@ -12,6 +12,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.AnalogGyro;
 
 /** Represents a swerve drive style drivetrain. */
+
 public class Drivetrain {
   
   public static final double kMaxSpeed = 3.0; // 3 meters per second
@@ -22,6 +23,14 @@ public class Drivetrain {
   private final Translation2d m_backLeftLocation = new Translation2d(-0.381, 0.381);
   private final Translation2d m_backRightLocation = new Translation2d(-0.381, -0.381);
 
+  /*
+   * driveMotorChannel PWM output for the drive motor.
+   * turningMotorChannel PWM output for the turning motor.
+   * driveEncoderChannelA DIO input for the drive encoder channel A
+   * driveEncoderChannelB DIO input for the drive encoder channel B
+   * turningEncoderChannelA DIO input for the turning encoder channel A
+   * turningEncoderChannelB DIO input for the turning encoder channel B
+   */
   private final SwerveModule m_frontLeft = new SwerveModule(1, 2, 0, 1, 2, 3);
   private final SwerveModule m_frontRight = new SwerveModule(3, 4, 4, 5, 6, 7);
   private final SwerveModule m_backLeft = new SwerveModule(5, 6, 8, 9, 10, 11);
@@ -29,8 +38,12 @@ public class Drivetrain {
 
   private final AnalogGyro m_gyro = new AnalogGyro(0);
 
+  // Kinematics is often used to describe the relationship between the motion of a robot's individual components (such as wheels or joints) and the resulting motion of the entire robot.
+  // SwerveDriveKinematics is a class used in robotics, particularly in the context of swerve drive systems, to perform kinematic calculations related to the movement and control of a swerve drive robot.
   private final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
 
+  // Odometry is the process of estimating a robot's position and orientation based on its movement and sensor measurements. || Gets 
+  // SwerveDriveOdometry is a class used in robotics, particularly in the context of swerve drive systems, to perform odometry calculations and estimate the robot's position and orientation on the field.
   private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry (m_kinematics, m_gyro.getRotation2d(), new SwerveModulePosition[] {m_frontLeft.getPosition(), m_frontRight.getPosition(), m_backLeft.getPosition(), m_backRight.getPosition()});
 
   public Drivetrain() {
@@ -56,7 +69,7 @@ public class Drivetrain {
 
   /** Updates the field relative position of the robot. */
   public void updateOdometry() {
-    m_odometry.update(m_gyro.getRotation2d(),new SwerveModulePosition[] {m_frontLeft.getPosition(), m_frontRight.getPosition(), m_backLeft.getPosition(), m_backRight.getPosition()});
+    m_odometry.update(m_gyro.getRotation2d(), new SwerveModulePosition[] {m_frontLeft.getPosition(), m_frontRight.getPosition(), m_backLeft.getPosition(), m_backRight.getPosition()});
   }
 
 }
