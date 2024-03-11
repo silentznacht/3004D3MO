@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.hardware.TalonFX;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -22,8 +24,8 @@ public class SwerveModule {
   private static final double kModuleMaxAngularVelocity = Drivetrain.kMaxAngularSpeed;
   private static final double kModuleMaxAngularAcceleration = 2 * Math.PI; // radians per second squared
 
-  private final PWMSparkMax m_driveMotor;
-  private final PWMSparkMax m_turningMotor;
+  private final TalonFX m_driveMotor;
+  private final TalonFX m_turningMotor;
 
   private final Encoder m_driveEncoder;
   private final Encoder m_turningEncoder;
@@ -50,8 +52,8 @@ public class SwerveModule {
    */
   
   public SwerveModule ( int driveMotorChannel, int turningMotorChannel, int driveEncoderChannelA, int driveEncoderChannelB, int turningEncoderChannelA, int turningEncoderChannelB) {
-          m_driveMotor = new PWMSparkMax(driveMotorChannel);
-          m_turningMotor = new PWMSparkMax(turningMotorChannel);
+          m_driveMotor = new TalonFX(driveMotorChannel);
+          m_turningMotor = new TalonFX(turningMotorChannel);
 
           m_driveEncoder = new Encoder(driveEncoderChannelA, driveEncoderChannelB);
           m_turningEncoder = new Encoder(turningEncoderChannelA, turningEncoderChannelB);
